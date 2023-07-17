@@ -1,0 +1,277 @@
+---
+title: 資料輸入輸出
+author: 曾聖澧
+date: Feb 25, 2019
+output:
+
+  html_document:
+
+    toc: true
+
+    toc_depth: 2
+
+    toc_float:
+
+      collapsed: false
+
+      smooth_scroll: false
+
+---
+---
+
+# ***簡單內建檔案操作***
+
+* Windows下路徑(path)必須改用 / 或 \\\\ ，
+或是直接以檔案總管選取檔案可用 file.choose() 。<br>
+dir(path, pattern) 列出 path 下符合pattern 的檔名。dir()則回報目前工作目錄內容。<br>
+list.files() 功能同 dir() <br>
+
+* R.home() 回報目前執行的R安裝在哪裡。<br>
+getwd() 可查詢目前工作路徑，更改路徑使用 setwd(目錄路徑) 。<br>
+
+* file.info(path) 可查詢子目錄/檔案大小、權限、修改與存取日期等。 <br>
+basename(path) 列出path中的檔案名，dirname(path)則列出其上一層的目錄名稱。<br>
+
+* dir.create() 是建立新的資料夾。file.copy, file.rename 功能如同其指令名稱易懂。<br>
+刪除檔案用unlink(path)。
+
+
+# ***讀入程式檔***
+
+語法：source(程式路徑)
+
+先產生程式碼
+```{r }
+
+writeLines(
+c("N <- nrow(trees)", 
+"with(trees, {
+symbols(Height, Volume, circles = Girth/24, inches = FALSE,
+        main = 'Trees Girth')", 
+"Sys.sleep(5)",
+"op <- palette(rainbow(N, end = 0.9))",
+"symbols(Height, Volume, circles = Girth/16, inches = FALSE, bg = 1:N,
+        fg = 'gray30', main = '')",
+"palette(op)",
+"})"),
+con="source-demo.R")
+```
+
+看看剛剛的檔案內容
+```{r }
+file.show("source-demo.R")
+```
+
+執行檔案
+```{r }
+source("source-demo.R")
+```
+
+刪除檔案
+```{r }
+unlink("source-demo.R")
+```
+
+
+# ***讀入不同格式資料檔***
+
+ID |SCORE       | AGE | GENDER
+-----------|-----------|------------|---------
+1 |50 |23 |F
+2 |55 |22 |M
+3 |40 |24 |M
+4 |45 |26 |F
+5 |36 |21 |M
+6 |48 |25 |F
+
+先開啟Excel輸入上表資料，存成example.xls與example.xlsx。<br> 
+然後轉換成逗號分隔(examle.csv)，tab分隔(example.txt)的檔案格式。 <br>
+另外刪除性別那一欄，另存成逗號分隔的"nogender.csv"。 
+<br>
+
+##scan
+
+看一下內容
+```{r }
+file.show("nogender.csv")
+```
+
+用 scan 讀入資料
+```{r }
+#不含第一行文字
+scan("nogender.csv", skip = 1, quiet = TRUE, sep=",")
+
+#只讀檔案中一行資料
+scan("nogender.csv", skip = 1, nlines = 1, sep=",")
+```
+
+打開剛才自己建立的xls檔案，用滑鼠選取數列複製到剪貼簿。<br>
+以下示範讀取剪貼簿中的複製文字（預設是空白分隔，可由sep選項變更）
+```{r }
+scan(file="clipboard",what="",sep="\t")
+```
+
+
+
+##readLines
+
+可讀入網路上文章
+```{r warning=FALSE}
+book=readLines("http://big5.quanben-xiaoshuo.com/n/shuichuan/1.txt",encoding="UTF-8")
+View(book)
+```
+
+看一下剛剛自己建的資料
+```{r }
+file.show("example.csv")
+```
+
+逐行讀進文字
+```{r }
+readLines("example.csv")
+```
+
+
+
+##用Rstudio匯入資料
+
+
+可參考 https://support.rstudio.com/hc/en-us/articles/218611977-Importing-Data-with-RStudio <br>
+
+重點是把它操作對應的指令記下來，不要太過依賴圖形化使用者介面。
+
+
+##以特定字元分隔之資料檔案(CSV,TXT等)
+
+命令列指令是用 read.table, read.delim, read.csv 等，
+可參考 https://blog.csdn.net/HHTNAN/article/details/54706885  <br>
+
+這些其實都是純文字檔，讀檔時要特別注意是否有欄位名稱（變數名稱），以及分隔的符號是什麼？<br>
+
+以上是對應用Rstudio的 File> Import Dataset > From Text(base) <br>
+也可採用File> Import Dataset > From Text(readr)， 自行比較一下指令，稍有不同。
+
+
+##EXCEL 檔案
+
+Rstudio 可直接由功能表點選讀入，或用以下指令：
+```{r warning=FALSE}
+library(readxl)
+A=read_xlsx("example.xlsx")
+B=read_xls("example.xls")
+
+```
+
+```{r warning=FALSE}
+library(ezpickr)
+A=pick("example.xlsx")$Sheet1
+B=pick("example.xls")
+
+```
+
+##SPSS 檔案
+
+先下載 http://cw.routledge.com/textbooks/9780805861853/spss-data-sets/InagakiLong.sav <br>
+
+Rstudio 可直接由功能表點選讀入，可在命令列查看對應的指令(haven::read_spss)。
+
+##SAS 檔案
+
+先下載 https://github.com/epam/parso/blob/master/src/test/resources/sas7bdat/mixed_data_two.sas7bdat <br>
+
+Rstudio 可直接由功能表點選讀入，可在命令列查看對應的指令(haven::read_sas)。
+
+##JSON 
+
+這是一種網路上常見的檔案交換格式 <br>
+可參考 https://blog.gtwang.org/r/jsonlite-json-format-parser-generator-tutorial/
+
+
+## .mat檔
+先下載
+https://github.com/fsprojects/matprovider/raw/master/data/varTypes.mat <br>
+
+```{r warning=FALSE}
+library(R.matlab)
+mlst<-readMat("varTypes.mat")
+names(mlst)
+```
+
+
+## .Rdata 二進位檔
+先下載
+http://www.rdatamining.com/data/termDocMatrix.rdata?attredirects=0&d=1 <br>
+
+可由命令列輸入指令讀取，Windows的RGUI可直接拖拉丟進R 的命令列，Rstudio則是從File > Open File... 
+
+```{r }
+load("termDocMatrix.Rdata")
+```
+
+##使用R套件中的資料
+```{r }
+data(iris)
+data(iris,package="datasets")
+data(biopsy,package="MASS")
+```
+第二行與第一行結果相同，是因為 dataset 是預設會搜尋的套件，但第三行不指定MASS會找不到。
+
+
+# ***輸出資料***
+
+## 給人看或給其他程式用
+
+常用有 cat, sink, writeLines, write.table <br>
+可參考 https://www.cnblogs.com/timeisbiggestboss/p/7766115.html
+
+## .mat檔
+一次可以不只存一個變數
+```{r }
+library(R.matlab)
+aa <- matrix(1:27, ncol=3)
+bb <- as.matrix(1:10)
+cc <- array(1:18, dim=c(2,3,3))
+writeMat("Robj.mat", A=aa, B=bb, C=cc)
+```
+
+## .Rdata 檔
+一次可以不只存一個變數
+```{r }
+ Dataset <-matrix(1:10,5,2) 
+ save(Dataset, file="testdata.Rdata")
+ save(Dataset, termDocMatrix, file="testdata2.Rdata")
+```
+
+## 壓縮檔
+產生一個壓縮檔
+```{r }
+bz <- bzfile("df.bz", "w")
+write.csv(aa,file=bz,row.names =F)
+close(bz)
+```
+讀入壓縮檔的作法只是write改成read
+```{r }
+bz <- bzfile("df.bz", "r")
+read.csv(file=bz)
+close(bz)
+```
+
+
+# ***覺得煩嗎？***
+光讀寫個檔案都這麼麻煩，要怎麼說服使用者R是資料分析的利器？<br>
+那就試試 rio 吧！如果它認識格式就直接轉換，或者根據你指定的 format轉換。<br> 
+
+轉換的三大指令，import/export/convert：
+
+http://finzi.psych.upenn.edu/R/library/rio/html/import.html <br>
+
+http://finzi.psych.upenn.edu/R/library/rio/html/export.html <br>
+
+http://finzi.psych.upenn.edu/R/library/rio/html/convert.html
+
+簡單教學在 https://cran.r-project.org/web/packages/rio/vignettes/rio.html
+
+
+# ***其他***
+還有一些特殊的格式或處理較大資料的技巧，請自行參考
+https://www.datacamp.com/community/tutorials/importing-data-r-part-two

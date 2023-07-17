@@ -1,0 +1,729 @@
+---
+title: 資料型態
+author: 葉永傑
+date: jan 25, 2019
+output: 
+  html_document:
+  
+    toc: true
+
+    toc_depth: 3
+
+    toc_float:
+
+      collapsed: false
+
+      smooth_scroll: false
+
+---
+
+<style type="text/css">
+
+body{ /* Normal 底色 */
+      font-size: 16px;
+      background:linear-gradient(to bottom, #f7f8f8 55%, #f3ffe6 100%);
+  }
+  
+td {  /* Table 下排表格˙*/
+  font-size: 15px;
+  font-weight:200;
+}
+th {/* 上排表格*/
+  font-size: 20px;
+  background: DarkGray;
+  color: #ffffff;
+}
+h1.title {/*標題*/
+  font-size: 38px;
+  color: DarkRed;
+  font-weight:600;
+}
+h1 { /* Header 1 */
+  font-size: 32px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 24px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkBlue;
+}
+code.r{ /* Code block-輸入*/
+    font-size: 14px;
+}
+pre { /* Code block - determines code spacing between lines  輸出 */
+    font-size: 16px;
+    
+}
+note{/*註解*/
+  font-size:15px;
+  font-weight:450;
+  color:#e62e00;
+}
+ex{/*舉例*/
+  font-size:16px;
+  font-weight:450;
+  color:#3366ff;
+
+}
+
+#Box {
+/*方格*/
+border:2px grey solid;
+padding:10px;
+width:500px;
+margin:15px 0px;
+background:#ffffff
+}
+</style>
+
+
+
+#資料結構
+##向量中的型態
+
+變數型態 | 別名    |  範例                  | 註解
+---------|---------|------------------------|-----------------------
+數值     |numeric  | 2.333                  | 雙精準浮點數16位
+整數     |integer  | 9L                     |
+邏輯值	 |logical  | TRUE、T、F             |	等價c(0,1)
+文字     |character| "NSYSU"                | 中文會與編碼有關
+因子     |factor   | factor(男,女)          | 
+日期	   |Date	   |2019-01-25              |沒有小時
+時間	   |POSIXct  |2019-01-23 19:08:06 CST |時區GMT + 8 = UTC + 8 = CST
+
+$\large\text {在R中，資料的最小單位是向量}$
+
+
+
+Numeric
+```{r numeric}
+class(2)
+```
+
+Integer
+```{r integer}
+class(2L)
+```
+
+Logical
+```{r logical}
+class(T)
+class(2!=2)
+```
+
+Character
+
+```{r character}
+class("NSYSU")
+```
+
+Factor
+```{r factor}
+class(factor(c("男","女")))
+```
+
+Date
+```{r Date}
+
+class(as.Date("2009-1-29"))
+```
+
+POSIXct
+```{r POSIXct}
+
+class(as.POSIXct("2019-01-23 19:08:06 CST"))
+
+```
+
+
+
+## 運算子(operation)
+
+一般運算子    | 語法    |邏輯運算子   |語法 |註解
+---------     |-------- |-------------|---- |---
+加            |+        | 相等        |==   |
+減            |-        | 不等        |!=   |
+乘            |*        | 大於        |>    |
+除            |/        | 小於        |<    |
+次方          |**  or ^ |大於等於     |>=   |
+餘數          |%%       |小於等於     |<=   |
+內積(矩陣相乘)|%*%      |包含         |%in% |需要兩個向量化元素
+       ""     | ""      |交集         |&    |需要兩個邏輯元素 
+       ""     |  ""     |聯集         |｜   |          
+
+
+###**運算子舉例** 
+
+Power
+
+```{r power}
+
+2**2
+```
+
+
+mod
+
+```{r mod}
+
+5%%2
+```
+
+內積(inner product)
+
+
+```{r}
+
+c(1,2,3)%*%c(2,3,4)
+```
+
+
+點積
+```{r}
+
+c(1,2,3)*c(2,3,4)
+```
+
+相等
+```{r}
+
+"NSYSU"=="1"
+```
+不等
+```{r}
+"NSYSU"!="1"
+```
+
+大於等於
+```{r}
+
+5>=3
+```
+
+包含
+
+```{r}
+
+5%in%c(1,2,3)
+```
+
+交集
+```{r}
+
+c(0,1,1)&c(1,0,0)
+```
+
+聯集
+```{r}
+
+c(0,1,1)|c(1,0,0)
+```
+
+
+
+## 表格型態轉換
+$\large\text{轉換函數  as.xxxx()}\quad \large\text{EX} \quad\text {as.numeric}$ 
+
+
+###轉換舉例
+
+數值轉因子
+```{r}
+
+as.factor(2)
+```
+
+因子轉數值
+
+錯
+```{r}
+
+as.numeric(factor(2))
+```
+
+對
+```{r}
+as.numeric(as.character(factor(2)))
+```
+
+數值轉邏輯 
+<note>註備:資料需1,0</note>
+
+```{r 數值轉邏輯}
+
+as.numeric(as.character(factor(2)))
+as.logical(c(0,0,1))
+```
+
+邏輯轉數值
+
+```{r 邏輯轉數值}
+
+as.numeric(c(T,F,T))
+```
+
+數值轉文字
+```{r 數值轉文字}
+
+as.character(c(0,1,2,3,4))
+```
+
+
+文字轉數值
+```{r 文字轉數值}
+
+as.numeric("1")
+```
+
+
+文字轉日期
+```{r 文字轉日期}
+
+as.Date("2019-1-1")
+as.Date("01-01-1970", format = "%m-%d-%Y")
+```
+
+文字轉時間
+```{r 文字轉時間}
+
+as.POSIXct("2019-1-1")
+as.POSIXct("2019-1-1 19:00")
+as.POSIXct("1970-01-01 00:00:00", tz = "GMT")
+
+```
+
+數值轉因子
+
+
+```{r}
+cut(1:50,breaks = c(0,25,40,50))
+```
+
+###Date _format 常見參數
+
+符號|	格式	      |範例
+----|-------------|------
+%d	|日	          |01
+%a	|禮拜幾的縮寫	|Mon
+%A	|禮拜幾	      |Monday
+%m	|月	          |01
+%b	|月名稱的縮寫	|Jan
+%B	|月名稱	      | January
+%y	|兩位數的年	  |70
+%Y	|四位數的年	  |1970
+
+
+
+##判斷向量型態 
+
+  * 1.判斷型態函數 is.____()    <ex>EX is.logical<ex/>
+  * 2.判斷日期型態函數 inherits(...,what="Date")  <note>判斷POSIXct用what=POSIXct</note>
+  * 3.判斷NA $\Rightarrow$ is.NA
+     
+<note> Note:NA無法用其他運算子計算 </note> 
+ <ex>EX: 1 * NA = NA </ex>
+
+ - 判斷數值
+```{r 判斷數值}
+
+
+is.numeric(8.7)
+```
+
+ - 判斷文字
+```{r 判斷文字}
+
+is.character("TRUE")
+is.character(TRUE)
+```
+
+ - 判斷日期
+```{r 判斷日期}
+
+inherits("1940-01-29",what="Date")
+inherits(as.Date("1940-01-29"),what="Date")
+```
+
+ - 判斷NA
+```{r 判斷NA}
+
+is.na(NA)
+is.na(1)
+```
+
+
+##向量
+我們可以想像一個向量就是一條序列(sequense)
+
+每一條向量元素都有對應到的index
+
+**index**|  1  |  2  |  3  |  4  |....|  n
+---------|-----|-----|-----|-----|----|----
+**value**|$s_1$|$s_2$|$s_3$|$s_4$|....|$s_n$
+
+我們可以使用c() 來定義一條向量
+EX c(1,2,3,4,5,6)   
+   
+   c("n","s","y","s","u")
+   
+<note>Note:R與MATLAB都為一個向量化的軟體</note>
+
+使用c() 來定義向量
+```{r 向量舉例}
+
+x <- c("red","yellow","blue")
+```
+
+刪除指定 index 的元素 element
+```{r}
+x[-2]
+```
+
+
+拿取指定 index 的元素 element
+```{r}
+
+x[1]
+```
+
+
+拿取多個 index的元素 element
+```{r}
+
+x[c(1,2)]
+```
+
+
+用邏輯型態的向量 拿取index的元素 element
+
+note:必需有同樣長度
+```{r}
+
+x[c(0,1,0)]
+
+```
+
+
+###創造向量
+
+ - 有序 序列
+```{r 有序 序列}
+seq(from = 1,to = 10,by = 2)
+seq(1,10,2)
+1:5
+```
+
+
+ - 重複(循環)序列
+```{r 重複(循環)序列}
+
+rep(1,10)
+rep(seq(1,2),5)
+rep(c("k","i"),5)
+
+```
+
+
+ - 組合兩個向量
+
+```{r 組合兩個向量}
+
+c(1:5,2:5)
+```
+
+
+###取代向量
+
+ - normal
+```{r normal}
+x<-c("N","S","Y","S","U")
+x[2:4]<-c("","T","")
+x
+```
+
+ - distinst
+
+```{r distinst }
+
+y<-c("N","S","Y","S","U")
+y[y=="S"]<-"k"
+y
+```
+
+
+
+###向量內部型態
+
+R把向量當作型態的最小單位，同一條向量裡面表格的型態需一致
+```{r 向量內型態}
+z1<-c(2L,5,"matlab","maple")
+class(z1)
+z2<-c(0,1,2,3)
+class(z2)
+```
+ 
+###factor (因子)
+因子的向量有兩種 有排序的跟沒排序的
+
+ - 不排序
+```{r 不排序}
+
+factor(c("spring", "summer", "autumn", "winter"))
+
+```
+
+ - 用字母排序
+
+```{r 用字母排序}
+
+factor(c("spring", "summer", "autumn", "winter"),ordered = T)
+```
+
+
+ - 自訂排序
+```{r 自訂排序}
+factor(c("spring", "summer", "autumn", "winter"),
+       ordered = T,
+       levels = c("summer", "winter", "spring", "autumn")
+       )
+```
+
+ - 將顯示與名稱不同
+
+```{r 將顯示與名稱不同}
+factor(c("spring", "summer", "autumn", "winter"),
+       ordered = T,
+       levels = c("summer", "winter", "spring", "autumn"),
+       labels = c(1,2,3,4)
+       )
+```
+
+##matrix (矩陣)& data.frame
+
+n * m 矩陣 我們會取名n個row ，m個column ，所以我們會有兩個index
+```{r MATRIX ex}
+sys<-matrix(1:9,nrow = 3)
+sys
+```
+
+第一個column 第二個row
+```{r}
+sys[1,2]
+```
+
+取第一個column
+```{r}
+
+sys[1,]
+```
+
+ - 矩陣轉置
+```{r 矩陣轉置}
+
+t(sys)
+```
+
+ - 取代矩陣元素
+```{r 取代矩陣元素}
+sys==1
+sys[sys==1]<-2
+sys
+```
+
+ - 取代矩陣向量
+```{r 取代矩陣向量}
+
+sys[1,]<-c(11,15,18)
+sys
+```
+
+- 矩陣相乘
+```{r 矩陣相乘}
+
+sys%*%sys
+```
+
+
+
+
+我們也可以再把它變成我們想要的維度
+
+*R會先把原先矩陣先變成一條向量再塑型，須留意順序*
+```{r 再塑型}
+dim(sys)
+new.sys <- sys
+dim(new.sys)<-c(1,9)
+```
+
+
+錯誤的: 無法factor 丟進MATRXI
+```{r}
+
+sys[,1]<-factor(sys[,1])
+str(sys)
+```
+
+
+**data.frame** 是一個比**matrix** 更加彈性的資料型態，<br>
+可以容納許多不一樣的結構在各個欄位之中，同時保留了一些 **matrix** 的性質
+
+
+ - 點乘
+```{r}
+sys<-data.frame(sys)
+sys*sys
+```
+ - 裝進factor
+```{r}
+
+sys[,1]<-factor(sys[,1])
+str(sys[1,])
+```
+
+ - 保留轉置功能
+
+```{r}
+
+t(sys)
+```
+
+ - 取名
+
+
+<note> note:不可重複名稱 </note>
+```{r 取名}
+
+names(sys)
+names(sys)<-c("理","學","院")
+rownames(sys)<-c("商","學","院")
+sys
+```
+
+
+ - 拼裝data.frame
+
+```{r}
+
+new.sys<-data.frame(sys,new=c(1,2,3))
+new.sys
+```
+
+ - 使用變數名稱 找出此變數
+```{r}
+
+new.sys$new
+```
+
+
+##array
+多維度資料型態可以構建超過2維度的資料
+
+
+<note> Note :在影片，圖(graph)...等方面也有對應的資料存取方式，較容易解省空間</note>
+<br>
+
+<ex> EX:igraph、tensorr....等</ex> 
+
+```{r}
+my_arr <- array(1:20, dim = c(2, 2, 5))
+my_arr
+
+```
+
+
+一樣取出第一個維度的第一個index 和第二維度的第一個index的向量
+```{r}
+my_arr[1,1,]
+```
+
+##list
+list 相比dataframe來說更像一個資料夾，可以不斷的包住任何物件，
+但搜尋上會比較困難也比較難轉用
+```{r}
+title <- "Great NBA Teams"
+teams <- c("Chicago Bulls", "Golden State Warriors")
+wins <- c(72, 73)
+losses <- c(10, 9)
+winning_percentage <- wins / (wins + losses)
+season <- c("1995-96", "2015-16")
+wins_losses <- matrix(c(wins, losses), nrow = 2)
+df <- data.frame(Teams = teams, Winning_Percentage = winning_percentage, Season = season)
+great_nba_teams <- list(title, teams, wins_losses, df)
+great_nba_teams
+great_nba_teams[4]
+
+```
+
+ - 拆除完只要內容物
+
+<note>Note: unlist 會攤開變成一串向量</note>
+```{r }
+great_nba_teams[[4]]
+unlist(great_nba_teams[4])
+
+```
+list 可以不斷往內包
+```{r}
+list_bag<-list(great_nba_teams,c(0,1,2,3))
+str(list_bag)
+```
+
+取出方式:
+前面需先拆才能看拿下一層的物件
+```{r}
+
+list_bag[[1]][1]
+
+```
+
+## 時間數列(序列)變數     ts(time series)
+
+時間上序列跟一般數列不同的是他對於排序上有較嚴格的要求，
+
+且有需要對他有分明的區間(循環) EX:春夏秋冬
+
+簡易語法 ts(x,start,end,frequency)
+
+x:變數(序列)
+
+start:開始時間
+
+frequency:頻率(幾次循環)
+
+
+```{r ts}
+ts(1:50,1960,1972,4)
+```
+
+##formula
+
+http://www.dataguru.cn/article-2431-1.html
+
+https://www.datacamp.com/community/tutorials/r-formula-tutorial
+
+##判斷資料屬性、型態、名稱
+
+###語法整理
+
+
+語法         |  用途         | 註解
+-------------|---------------|-
+ dim         | 查詢維度      | 多維度 EX:matrix list array
+ length      | 查詢向量長度  | 一般向量型態 
+ str         | 查詢資料內容  | 較全面
+ names       |查詢行(col)名稱|
+ rownames    |查詢列(row)名稱|
+ class       | 查詢資料型態  |  只觀看型態
+ attributes  | 查詢特定屬性  | 維度、 各維度名稱、標籤
+ 
+ 
+ <hr>
+ <pre>
+ 
+  參考資料:[輕鬆學習R語言](https://yaojenkuo.gitbooks.io/learn-r-the-easy-way/content/)
+           
+ <pre>
